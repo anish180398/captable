@@ -18,11 +18,10 @@ services:
       - CI=true
       - UPLOAD_STORAGE_PATH=/app/uploads
     working_dir: /app
-    command: [/bin/sh, -c, "pnpm install && pnpm dev"]
+    command: [/bin/sh, -c, "rm -rf .next && pnpm install && pnpm dev"]
     volumes:
       - .:/app
       - /app/node_modules
-      - /app/.next
       - /app/.pnpm-store
       - uploads:/app/uploads
 
@@ -43,11 +42,10 @@ services:
     environment:
       - CI=true
     working_dir: /app
-    command: [/bin/sh, -c, "pnpm install && pnpm db:studio"]
+    command: [/bin/sh, -c, "rm -rf .next && pnpm install && pnpm db:studio"]
     volumes:
       - .:/app
       - /app/node_modules
-      - /app/.next
       - /app/.pnpm-store
       - uploads:/app/uploads
 

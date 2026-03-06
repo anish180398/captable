@@ -36,6 +36,6 @@ jobs:
             git fetch origin
             git reset --hard "origin/$BRANCH"
             docker compose build --no-cache
-            docker compose up -d
+            docker compose up -d --force-recreate --remove-orphans
             docker compose exec -T app pnpm db:migrate 2>/dev/null || true
             echo "Deploy finished: $(git rev-parse --short HEAD)"
