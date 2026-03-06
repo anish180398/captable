@@ -153,5 +153,11 @@
   "engines": {
     "node": ">=20.11.0",
     "pnpm": ">=9.1.2"
+  },
+  "postcss": {
+    "plugins": {
+      "tailwindcss": {},
+      "autoprefixer": {}
+    }
   }
 }
