@@ -1,4 +1,4 @@
-ARG NODE_VERSION=20.11.0
+ARG NODE_VERSION=22.16.0
 
 FROM --platform=linux/amd64 node:${NODE_VERSION}-alpine AS base
 LABEL fly_launch_runtime="Next.js/Prisma"

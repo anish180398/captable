@@ -32,7 +32,7 @@ export const commonRouter = createTRPCRouter({
     (members || []).map((member) =>
       contacts.push({
         id: member.id,
-        image: member.user.image ?? null,
+        image: member.user.image ?? undefined,
         email: member.user.email ?? "",
         value: member.user.email ?? "",
         name: member.user.name ?? "",
