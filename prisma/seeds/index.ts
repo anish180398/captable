@@ -5,6 +5,10 @@ colors.enable();
 
 import type { QuestionCollection } from "inquirer";
 import seedCompanies from "./companies";
+import seedEquityPlans from "./equity-plans";
+import seedSecurities from "./securities";
+import seedShareClasses from "./share-classes";
+import seedStakeholders from "./stakeholders";
 import seedTeam from "./team";
 
 if (process.env.NODE_ENV === "production") {
@@ -19,51 +23,64 @@ const seed = async () => {
     message: "Are you sure you want to NUKE 🚀 and re-seed the database?",
   } as QuestionCollection);
 
-  // const answer = true;
   const answer = inquiry.answer as boolean;
 
   if (answer) {
     await nuke();
 
-    console.log("Seeding database".underline.cyan);
-    return db.$transaction(async () => {
-      await seedCompanies();
-      await seedTeam();
-    });
+    console.log("\nSeeding database...".underline.cyan);
+    await seedCompanies();
+    await seedTeam();
+    await seedStakeholders();
+    await seedShareClasses();
+    await seedEquityPlans();
+    await seedSecurities();
   } else {
     throw new Error("Seeding aborted");
   }
 };
 
-const nuke = async () => {
+const nuke = () => {
   console.log("🚀 Nuking database records".yellow);
-  return db.$transaction(async (db) => {
-    await db.user.deleteMany();
-    await db.member.deleteMany();
-    await db.company.deleteMany();
-    await db.shareClass.deleteMany();
-    await db.equityPlan.deleteMany();
-    await db.document.deleteMany();
-    await db.bucket.deleteMany();
-    await db.audit.deleteMany();
-    await db.session.deleteMany();
+  return db.$transaction(async (tx) => {
+    await tx.option.deleteMany();
+    await tx.share.deleteMany();
+    await tx.equityPlan.deleteMany();
+    await tx.shareClass.deleteMany();
+    await tx.stakeholder.deleteMany();
+    await tx.document.deleteMany();
+    await tx.bucket.deleteMany();
+    await tx.template.deleteMany();
+    await tx.audit.deleteMany();
+    await tx.member.deleteMany();
+    await tx.session.deleteMany();
+    await tx.user.deleteMany();
+    await tx.company.deleteMany();
   });
 };
 
 await seed()
   .then(async () => {
-    console.log("✅ Database seeding completed".green);
+    console.log("\n✅ Database seeding completed!\n".green);
     console.log(
-      `💌 We have created four admin accounts for you. Please login with one of these emails:\n`
-        .cyan,
-      `ceo@example.com\n`.underline.yellow,
-      `cto@example.com\n`.underline.yellow,
-      `cfo@example.com\n`.underline.yellow,
-      `lawyer@example.com\n`.underline.yellow,
+      "💌 Login with any of these accounts (password: P@ssw0rd!):\n".cyan,
+      "ceo@example.com\n".underline.yellow,
+      "cto@example.com\n".underline.yellow,
+      "cfo@example.com\n".underline.yellow,
+    );
+    console.log(
+      "📊 Seeded data:\n".cyan,
+      "- 5 companies\n",
+      "- 5 team members (each member of all companies)\n",
+      "- 8 stakeholders per company (founders, investors, employees, advisors)\n",
+      "- 2 share classes per company (Common + Series A Preferred)\n",
+      "- 1 equity plan per company\n",
+      "- 4 share grants + 4 option grants per company\n",
     );
     await db.$disconnect();
   })
   .catch(async (error: Error) => {
     console.log(`❌ ${error.message}`.red);
     await db.$disconnect();
+    process.exit(1);
   });

@@ -1,0 +1,4 @@
+Stakeholder Email,Share Class Name,Certificate ID,Quantity,Price Per Share,Issue Date (YYYY-MM-DD),Board Approval Date (YYYY-MM-DD),Vesting Start Date (YYYY-MM-DD),Rule 144 Date (YYYY-MM-DD),Cliff Years,Vesting Years
+john@example.com,Common Shares,CS-001,10000,1.00,2024-01-01,2024-01-01,2024-01-01,2025-01-01,1,4
+jane@example.com,Preferred Shares,PS-001,5000,2.50,2024-03-15,2024-03-15,2024-03-15,2025-03-15,0,3
+investor@acme.com,Common Shares,CS-002,20000,1.00,2024-06-01,2024-06-01,2024-06-01,2025-06-01,0,0

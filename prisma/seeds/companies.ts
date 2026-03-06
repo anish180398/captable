@@ -1,52 +1,87 @@
 import { generatePublicId } from "@/common/id";
 import { db } from "@/server/db";
-import { faker } from "@faker-js/faker";
 import colors from "colors";
-import { sample } from "lodash-es";
 colors.enable();
 
-type CompanyType = {
-  name: string;
-  publicId: string;
-  incorporationType: string;
-  incorporationDate: Date;
-  incorporationState: string;
-  incorporationCountry: string;
+const COMPANIES = [
+  {
+    name: "Acme Corp",
+    publicId: generatePublicId(),
+    incorporationType: "c-corp",
+    incorporationDate: new Date("2018-03-15"),
+    incorporationState: "DE",
+    incorporationCountry: "US",
+    streetAddress: "1 Infinite Loop",
+    city: "Cupertino",
+    state: "CA",
+    zipcode: "95014",
+    country: "US",
+  },
+  {
+    name: "Stellar Dynamics",
+    publicId: generatePublicId(),
+    incorporationType: "c-corp",
+    incorporationDate: new Date("2019-07-22"),
+    incorporationState: "DE",
+    incorporationCountry: "US",
+    streetAddress: "100 Main Street",
+    city: "Austin",
+    state: "TX",
+    zipcode: "78701",
+    country: "US",
+  },
+  {
+    name: "NovaTech Solutions",
+    publicId: generatePublicId(),
+    incorporationType: "c-corp",
+    incorporationDate: new Date("2020-01-10"),
+    incorporationState: "DE",
+    incorporationCountry: "US",
+    streetAddress: "200 Market Street",
+    city: "San Francisco",
+    state: "CA",
+    zipcode: "94105",
+    country: "US",
+  },
+  {
+    name: "Beacon Ventures",
+    publicId: generatePublicId(),
+    incorporationType: "llc",
+    incorporationDate: new Date("2017-11-05"),
+    incorporationState: "NY",
+    incorporationCountry: "US",
+    streetAddress: "55 Water Street",
+    city: "New York",
+    state: "NY",
+    zipcode: "10041",
+    country: "US",
+  },
+  {
+    name: "Horizon Labs",
+    publicId: generatePublicId(),
+    incorporationType: "c-corp",
+    incorporationDate: new Date("2021-05-18"),
+    incorporationState: "DE",
+    incorporationCountry: "US",
+    streetAddress: "401 Congress Ave",
+    city: "Boston",
+    state: "MA",
+    zipcode: "02101",
+    country: "US",
+  },
+];
 
-  streetAddress: string;
-  city: string;
-  state: string;
-  zipcode: string;
-  country: string;
-};
-const seedCompanies = async (count = 4) => {
-  const companies: CompanyType[] = [];
+const seedCompanies = async () => {
+  console.log(`Seeding ${COMPANIES.length} companies`.blue);
 
-  for (let i = 0; i < count; i++) {
-    companies.push({
-      name: faker.company.name(),
-      publicId: generatePublicId(),
-      incorporationType: sample(["llc", "c-corp", "s-corp"]),
-      incorporationDate: faker.date.past(),
-      incorporationState: faker.location.state({ abbreviated: true }),
-      incorporationCountry: faker.location.countryCode(),
+  await db.company.createMany({ data: COMPANIES });
 
-      streetAddress: faker.location.streetAddress(),
-      city: faker.location.city(),
-      state: faker.location.state({ abbreviated: true }),
-      zipcode: faker.location.zipCode(),
-      country: faker.location.countryCode(),
-    });
-  }
-
-  console.log(`Seeding ${companies.length} companies`.blue);
-
-  const records = await db.company.createMany({
-    data: companies,
+  const companies = await db.company.findMany({
+    where: { name: { in: COMPANIES.map((c) => c.name) } },
   });
 
-  console.log(`🎉 Seeded ${records.count} companies`.green);
-  return records;
+  console.log(`🎉 Seeded ${companies.length} companies`.green);
+  return companies;
 };
 
 export default seedCompanies;

@@ -1,7 +1,7 @@
 "use client";
 
 import { PublicEnvScript } from "@/components/public-env-script";
-import { env } from "@/env";
+import { isSentryEnabled } from "@/constants/sentry";
 import NextError from "next/error";
 import { useEffect } from "react";
 
@@ -12,7 +12,7 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     const handleError = async () => {
-      if (env.NEXT_PUBLIC_SENTRY_DSN) {
+      if (isSentryEnabled) {
         const captureException = (await import("@sentry/nextjs"))
           .captureException;
 

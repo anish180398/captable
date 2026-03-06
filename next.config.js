@@ -53,11 +53,7 @@ const nextConfig = {
   },
 };
 
-const hasSentry = !!(
-  process.env.SENTRY_ORG &&
-  process.env.SENTRY_PROJECT &&
-  process.env.NEXT_PUBLIC_SENTRY_DSN
-);
+const hasSentry = false;
 
 export default hasSentry
   ? withSentryConfig(bundleAnalyzer(nextConfig), {

@@ -5,7 +5,7 @@ import {
 } from "@/components/ui/popover";
 import { COLORS } from "@/constants/esign";
 import { cn } from "@/lib/utils";
-import { type ComponentProps, type ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 
 interface useMeasurementProps {
   currentViewportHeight: number;
@@ -134,7 +134,7 @@ export function TemplateFieldContainer({
       <PopoverTrigger asChild>
         <button
           className={cn(
-            `group absolute z-20 cursor-pointer rounded border-2 bg-opacity-30`,
+            "group absolute z-20 cursor-pointer rounded border-2 bg-opacity-30",
             COLORS[color as keyof typeof COLORS]?.border,
             COLORS[color as keyof typeof COLORS]?.bg,
             className,

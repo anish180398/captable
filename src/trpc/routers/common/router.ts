@@ -1,4 +1,4 @@
-import { type ShareContactType } from "@/schema/contacts";
+import type { ShareContactType } from "@/schema/contacts";
 import { createTRPCRouter, withAuth } from "@/trpc/api/trpc";
 
 export const commonRouter = createTRPCRouter({
@@ -32,10 +32,10 @@ export const commonRouter = createTRPCRouter({
     (members || []).map((member) =>
       contacts.push({
         id: member.id,
-        image: member.user.image!,
-        email: member.user.email!,
-        value: member.user.email!,
-        name: member.user.name!,
+        image: member.user.image ?? null,
+        email: member.user.email ?? "",
+        value: member.user.email ?? "",
+        name: member.user.name ?? "",
         type: "member",
       }),
     );
@@ -45,7 +45,7 @@ export const commonRouter = createTRPCRouter({
         email: stakeholder.email,
         value: stakeholder.email,
         name: stakeholder.name,
-        institutionName: stakeholder.institutionName!,
+        institutionName: stakeholder.institutionName ?? "",
         type: "stakeholder",
       }),
     );

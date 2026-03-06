@@ -5,6 +5,7 @@ import { authRouter } from "../routers/auth/router";
 import { bankAccountsRouter } from "../routers/bank-accounts/router";
 import { billingRouter } from "../routers/billing-router/router";
 import { bucketRouter } from "../routers/bucket-router/router";
+import { capTableRouter } from "../routers/captable-router/router";
 import { commonRouter } from "../routers/common/router";
 import { companyRouter } from "../routers/company-router/router";
 import { dataRoomRouter } from "../routers/data-room-router/router";
@@ -54,6 +55,7 @@ export const appRouter = createTRPCRouter({
   rbac: rbacRouter,
   accessToken: accessTokenRouter,
   bankAccounts: bankAccountsRouter,
+  capTable: capTableRouter,
 });
 
 // export type definition of API

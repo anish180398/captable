@@ -1,5 +1,5 @@
 import { ResetPasswordForm } from "@/components/onboarding/reset-password";
-import { type Metadata } from "next";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Reset Password",
@@ -11,8 +11,6 @@ export type PageProps = {
   };
 };
 
-export default async function ResetPasswordPage({
-  params: { token },
-}: PageProps) {
+export default function ResetPasswordPage({ params: { token } }: PageProps) {
   return <ResetPasswordForm token={token} />;
 }
