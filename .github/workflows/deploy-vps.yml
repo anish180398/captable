@@ -1,0 +1,41 @@
+# Deploy to VPS on push to main
+# Requires GitHub secrets: VPS_HOST, VPS_USERNAME, VPS_SSH_PRIVATE_KEY
+# Optional: VPS_REPO_PATH (default: /opt/captable), VPS_BRANCH (default: main)
+
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: deploy-vps
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy to Ubuntu VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.VPS_SSH_PORT || 22 }}
+          script: |
+            set -e
+            REPO_PATH="${{ secrets.VPS_REPO_PATH }}"
+            [ -z "$REPO_PATH" ] && REPO_PATH="/opt/captable"
+            BRANCH="${{ secrets.VPS_BRANCH }}"
+            [ -z "$BRANCH" ] && BRANCH="main"
+            cd "$REPO_PATH"
+            git fetch origin
+            git reset --hard "origin/$BRANCH"
+            docker compose build --no-cache
+            docker compose up -d
+            docker compose exec -T app pnpm db:migrate 2>/dev/null || true
+            echo "Deploy finished: $(git rev-parse --short HEAD)"

@@ -45,7 +45,6 @@ const nextConfig = {
       "pino",
       "pino-pretty",
       "pdf-lib",
-      "@aws-sdk/s3-request-presigner",
       "@react-pdf/renderer",
     ],
   },

@@ -41,11 +41,14 @@ export const env = createEnv({
     EMAIL_SERVER: z.string().optional(),
     EMAIL_FROM: z.string(),
 
-    // upload
-    UPLOAD_ENDPOINT: z.string(),
-    UPLOAD_REGION: z.string(),
-    UPLOAD_BUCKET_PUBLIC: z.string(),
-    UPLOAD_BUCKET_PRIVATE: z.string(),
+    // upload (filesystem storage - used when deploying in Docker/VPS)
+    UPLOAD_STORAGE_PATH: z.string().default("/app/uploads"),
+
+    // legacy S3-compatible upload (optional - leave unset to use filesystem)
+    UPLOAD_ENDPOINT: z.string().optional(),
+    UPLOAD_REGION: z.string().optional(),
+    UPLOAD_BUCKET_PUBLIC: z.string().optional(),
+    UPLOAD_BUCKET_PRIVATE: z.string().optional(),
     UPLOAD_ACCESS_KEY_ID: z.string().optional(),
     UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
 
@@ -95,6 +98,7 @@ export const env = createEnv({
     EMAIL_SERVER: process.env.EMAIL_SERVER,
     EMAIL_FROM: process.env.EMAIL_FROM,
 
+    UPLOAD_STORAGE_PATH: process.env.UPLOAD_STORAGE_PATH,
     UPLOAD_ENDPOINT: process.env.UPLOAD_ENDPOINT,
     UPLOAD_REGION: process.env.UPLOAD_REGION,
     UPLOAD_BUCKET_PUBLIC: process.env.UPLOAD_BUCKET_PUBLIC,

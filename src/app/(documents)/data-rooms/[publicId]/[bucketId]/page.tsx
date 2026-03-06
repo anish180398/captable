@@ -20,11 +20,15 @@ const DataRoomPage = async ({
 
   try {
     decodedToken = await decode(token);
-  } catch (error) {
+  } catch (_error) {
     return notFound();
   }
 
-  const { companyId, dataRoomId, recipientId } = decodedToken?.payload;
+  if (!decodedToken) {
+    return notFound();
+  }
+
+  const { companyId, dataRoomId, recipientId } = decodedToken.payload;
   if (!companyId || !recipientId || !dataRoomId) {
     return notFound();
   }
@@ -83,6 +87,7 @@ const DataRoomPage = async ({
 
   const company = dataRoom.company;
   const remoteFile = await getPresignedGetUrl(file.key);
+  const fileUrlWithToken = `${remoteFile.url}${token ? `?token=${token}` : ""}`;
 
   return (
     <SharePageLayout
@@ -113,7 +118,7 @@ const DataRoomPage = async ({
     >
       <FilePreview
         name={file.name}
-        url={remoteFile.url}
+        url={fileUrlWithToken}
         mimeType={file.mimeType}
       />
     </SharePageLayout>

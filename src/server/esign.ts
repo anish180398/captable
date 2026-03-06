@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/prefer-for-of */
 import { dayjsExt } from "@/common/dayjs";
-import { type TUploadFile, getFileFromS3, uploadFile } from "@/common/uploads";
+import { type TUploadFile, uploadFile } from "@/common/uploads";
 import { TAG } from "@/lib/tags";
 import { AuditLogTemplate } from "@/pdf-templates/audit-log-template";
+import { getFileBuffer } from "@/server/file-storage";
 import { createBucketHandler } from "@/trpc/routers/bucket-router/procedures/create-bucket";
 import { createDocumentHandler } from "@/trpc/routers/document-router/procedures/create-document";
 import { renderToBuffer } from "@react-pdf/renderer";
@@ -116,7 +117,7 @@ export async function generateEsignPdf({
   audits,
   templateName,
 }: GenerateEsignSignPdfOptionsType) {
-  const docBuffer = await getFileFromS3(bucketKey);
+  const docBuffer = await getFileBuffer(bucketKey);
   const pdfDoc = await PDFDocument.load(docBuffer);
 
   const pages = pdfDoc.getPages();

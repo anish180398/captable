@@ -9,7 +9,6 @@ services:
     depends_on:
       - pg
       - smtp
-      - minio
     restart: always
     ports:
       - 3000:3000
@@ -17,6 +16,7 @@ services:
       - ".env"
     environment:
       - CI=true
+      - UPLOAD_STORAGE_PATH=/app/uploads
     working_dir: /app
     command: [/bin/sh, -c, "pnpm install && pnpm dev"]
     volumes:
@@ -24,6 +24,7 @@ services:
       - /app/node_modules
       - /app/.next
       - /app/.pnpm-store
+      - uploads:/app/uploads
 
   studio:
     build:
@@ -34,7 +35,6 @@ services:
     depends_on:
       - pg
       - smtp
-      - minio
     restart: always
     ports:
       - 5555:5555
@@ -49,6 +49,7 @@ services:
       - /app/node_modules
       - /app/.next
       - /app/.pnpm-store
+      - uploads:/app/uploads
 
   pg:
     image: postgres:15
@@ -70,36 +71,6 @@ services:
       - 8025:8025
       - 1025:1025
 
-  minio:
-    image: minio/minio
-    container_name: captable-minio
-    ports:
-      - 9002:9002
-      - 9001:9001
-    volumes:
-      - minio:/data
-    environment:
-      - MINIO_ROOT_USER=captable
-      - MINIO_ROOT_PASSWORD=password
-    entrypoint: sh
-    command: -c 'minio server /data --console-address ":9001" --address ":9002"'
-
-  # minio client - is expected to be run once to setup minio buckets. It'll exit 0 after setup
-  mc:
-    image: minio/mc
-    container_name: captable-minio-client
-    depends_on:
-      - minio
-    entrypoint: sh
-    command: |
-      -c "
-        sleep 10;
-        mc alias set myminio http://minio:9002 captable password;
-        mc mb myminio/captable-private-bucket;
-        mc mb myminio/captable-public-bucket;
-        mc policy set public myminio/captable-public-bucket;
-        exit 0;
-      "
 volumes:
-  minio:
   postgres:
+  uploads:
