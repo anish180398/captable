@@ -12,7 +12,7 @@ const OnboardingPage = async () => {
   const user = session.user;
 
   if (user.isOnboarded) {
-    redirect("/dashboard");
+    redirect(user.companyPublicId ? `/${user.companyPublicId}` : "/sign-out");
   }
 
   return (

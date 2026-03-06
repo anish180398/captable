@@ -327,26 +327,43 @@ export interface checkMembershipOptions {
 }
 
 export async function checkMembership({ session, tx }: checkMembershipOptions) {
-  const data = await tx.member.findFirst({
+  const select = {
+    id: true,
+    companyId: true,
+    role: true,
+    customRoleId: true,
+    userId: true,
+    user: {
+      select: {
+        name: true,
+        email: true,
+      },
+    },
+  } as const;
+
+  // Fast path: exact match from JWT
+  let data = await tx.member.findFirst({
     where: {
       id: session.user.memberId,
       companyId: session.user.companyId,
       isOnboarded: true,
     },
-    select: {
-      id: true,
-      companyId: true,
-      role: true,
-      customRoleId: true,
-      userId: true,
-      user: {
-        select: {
-          name: true,
-          email: true,
-        },
-      },
-    },
+    select,
   });
+
+  // Fallback: JWT is stale (e.g. after DB reset/reseed).
+  // Try to find any active onboarded membership for this user.
+  if (!data && session.user.id) {
+    data = await tx.member.findFirst({
+      where: {
+        userId: session.user.id,
+        isOnboarded: true,
+        status: "ACTIVE",
+      },
+      orderBy: { lastAccessed: "desc" },
+      select,
+    });
+  }
 
   if (!data) {
     throw new Error("membership not found");

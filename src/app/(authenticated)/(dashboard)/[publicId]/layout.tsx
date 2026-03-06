@@ -6,7 +6,10 @@ import { getCompanyList } from "@/server/company";
 import { redirect } from "next/navigation";
 import "@/styles/hint.css";
 import { RBAC } from "@/lib/rbac";
-import { getServerPermissions } from "@/lib/rbac/access-control";
+import {
+  MembershipNotFoundError,
+  getServerPermissions,
+} from "@/lib/rbac/access-control";
 import { RolesProvider } from "@/providers/roles-provider";
 
 type DashboardLayoutProps = {
@@ -21,14 +24,22 @@ const DashboardLayout = async ({
   const { user } = await withServerComponentSession();
 
   if (user.companyPublicId !== publicId) {
-    redirect(`/${user.companyPublicId}`);
+    // Stale JWT: redirect to the user's actual company, or sign out if none
+    redirect(user.companyPublicId ? `/${user.companyPublicId}` : "/sign-out");
   }
 
-  const [companies, permissionsData] = await Promise.all([
-    getCompanyList(user.id),
-    getServerPermissions(),
-  ]);
+  let permissionsData: Awaited<ReturnType<typeof getServerPermissions>>;
+  try {
+    permissionsData = await getServerPermissions();
+  } catch (err) {
+    if (err instanceof MembershipNotFoundError) {
+      // Session is stale and no membership found — force sign-out to clear JWT
+      redirect("/sign-out");
+    }
+    throw err;
+  }
 
+  const companies = await getCompanyList(user.id);
   const permissions = RBAC.normalizePermissionsMap(permissionsData.permissions);
   return (
     <RolesProvider data={{ permissions }}>

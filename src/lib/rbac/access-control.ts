@@ -28,13 +28,21 @@ class MembershipNotFoundError extends BaseError {
   public readonly retry = false;
 }
 
+export { MembershipNotFoundError };
+
 export async function checkAccessControlMembership({
   session,
   tx,
 }: checkMembershipOptions) {
   return wrap(
     checkMembership({ session, tx }),
-    (err) => new MembershipNotFoundError({ message: err.message }),
+    (err) =>
+      new MembershipNotFoundError({
+        message:
+          err instanceof Error
+            ? err.message
+            : String(err ?? "Membership not found"),
+      }),
   );
 }
 

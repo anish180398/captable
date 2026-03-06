@@ -57,8 +57,16 @@ export const api = createTRPCProxyClient<AppRouter>({
               observer.next({ result: { data } });
               observer.complete();
             })
-            .catch((cause: TRPCErrorResponse) => {
-              observer.error(TRPCClientError.from(cause));
+            .catch((cause: unknown) => {
+              observer.error(
+                cause != null &&
+                  typeof (cause as TRPCErrorResponse).error?.message ===
+                    "string"
+                  ? TRPCClientError.from(cause as TRPCErrorResponse)
+                  : TRPCClientError.from(
+                      cause instanceof Error ? cause : new Error(String(cause)),
+                    ),
+              );
             });
         }),
   ],
